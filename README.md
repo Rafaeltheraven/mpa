@@ -5,17 +5,31 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
 * Add a random album to the playlist
 * Skip forward to the next album
+* Go to previous album
+* See playlist as albums instead of tracks
 * Whatever else I can think of that sounds useful
 
 ## How to use
 
-`rand` - Adds a random album to the queue
+`rand` - Adds a random album to the queue, `-c` will clear the entire queue before adding.
 
-`next` - Skips forward to the next album in the queue
+`next` - Skips forward to the next album in the queue, `-c` will clear all albums before the newly selected one.
 
-Prepend any option with `-c` to clear the playlist up to the newly added/selected album. For example, `mpc -c next` will skip to the next album and clear all albums in the queue before it.
+`prev` - Go to the previous album in the queue, `-c` does nothing.
 
-Options can also be chained, so `mpc rand next rand` will add a random album to the queue, skip to the next album, and then add a random album to the queue again.
+`playlist` - Shows all the albums in the queue.
+
+`current` - Show the currently playing album.
+
+`queued` - Shows the album that is next in the queue.
+
+`status` - Simply shows `mpc status`
+
+`crop` - Remove all albums from the queue except for the current playing one
+
+`play [index]` - Will play the `index`th album in the queue (1-index as `mpc` is). `-c` will remove all albums before this index.
+
+Use the `-c` flag to remove albums from the queue. The exact effect depends on the command used, but overall, `-c` will remove all albums up to what has just been added/started.
 
 ## Requirements
 
