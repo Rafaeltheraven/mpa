@@ -13,7 +13,7 @@ rand() {
 	index=$(($RANDOM % $size))
 	# Get a random album
 	album=${splitted[$index]}
-	if [[ $clear == True ]]; then
+	if [[ $clear = True ]]; then
 		mpc clear
 	fi
 	# Find all the tracks that belong to this album
@@ -37,12 +37,12 @@ next() {
 	max=$(( ${#splitted[@]} ))
 	finished=False
 	# Now we loop up, for loops are wonky so while
-	while [[ $i -lt $max && $finished == False ]]
+	while [[ $i -lt $max && $finished = False ]]
 	do
 		# Get the album at this index
 		album="${splitted[i]}"
 		# As long as the album for this track is the same as the one for the current track, keep counting
-		if [[ "$current" == "$album" ]]; then
+		if [[ "$current" = "$album" ]]; then
 			let "i++"
 		else
 			finished=True
@@ -51,7 +51,7 @@ next() {
 	let "i++"
 	# Play the track at 1 higher than the last track in the album
 	mpc play "$i"
-	if [[ $clear == True ]]; then
+	if [[ $clear = True ]]; then
 		# To clear, we simply keep removing tracks from the queue until we reach 0
 		j=$i
 		let "j--"
@@ -70,10 +70,10 @@ prev() {
 	let "i--"
 	prev="${splitted[i]}"
 	finished=False
-	while [[ $finished == False ]]
+	while [[ $finished = False ]]
 	do
 		album="${splitted[i]}"
-		if [[ "$prev" == "$album" ]]; then
+		if [[ "$prev" = "$album" ]]; then
 			let "i--"
 		else
 			finished=True
@@ -156,7 +156,7 @@ play() {
 		let "newIndex++"
 	done
 	mpc play "$newIndex"
-	if [[ $clear == True ]]; then
+	if [[ $clear = True ]]; then
 		j=$newIndex
 		let "j--"
 		while [[ $j -gt 0 ]]
@@ -192,7 +192,7 @@ i=0
 
 opt="$1"
 
-if [[ $* == *-c ]]; then
+if [[ $* = *-c ]]; then
 	clear=True
 fi
 
