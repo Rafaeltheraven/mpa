@@ -16,3 +16,11 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 Prepend any option with `-c` to clear the playlist up to the newly added/selected album. For example, `mpc -c next` will skip to the next album and clear all albums in the queue before it.
 
 Options can also be chained, so `mpc rand next rand` will add a random album to the queue, skip to the next album, and then add a random album to the queue again.
+
+## Requirements
+
+Since this is basically just a wrapper around various `mpc` calls. If `mpc` works, `mpa` works. Meaning you will need
+
+1. `mpd`
+
+2. `mpc`
