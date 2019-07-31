@@ -17,7 +17,7 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
 `prev` - Go to the previous album in the queue, `-c` does nothing.
 
-`playlist` - Shows all the albums in the queue.
+`playlist` - Shows all the albums in the queue. This uses the albumartist tag, so please be sure that your music is properly tagged.
 
 `current` - Show the currently playing album.
 
