@@ -1,10 +1,13 @@
-# mpd_shuffle
-Super duper simple bash script that just grabs a random album from your library and plays it.
+# Music Player Album
+A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
-Literally just run the script and it will clear your current playlist and add a new album.
+## Features
 
-REQUIREMENTS:
+* Add a random album to the playlist
+* Skip forward to the next album
+* Whatever else I can think of that sounds useful
 
-`mpc`
+## How to use
 
-`mpd`
+`mpa rand` - Adds a random album to the playlist. Use `-c` to clear the playlist beforehand (effectively playing a new album)
+`mpa next` - Skip to the next album
