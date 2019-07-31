@@ -1,0 +1,75 @@
+#!/bin/bash
+
+clear=False
+
+rand() {
+	albums="$(mpc list album)"
+	readarray -t splitted <<<"$albums"
+	size=${#splitted[@]}
+	index=$(($RANDOM % $size))
+	album=${splitted[$index]}
+	if [[ $clear == True ]]; then
+		mpc clear
+	fi
+	mpc findadd album "$album"
+	echo "Added the album: $album"
+	mpc play
+}
+
+
+next() {
+	playlist="$(mpc -f %album% playlist)"
+	readarray -t splitted <<<"$playlist"
+	i="$(mpc -f %position% current)"
+	current="$(mpc -f %album% current)"
+	max=$(( ${#splitted[@]} ))
+	finished=False
+	while [[ $i -lt $max && $finished == False ]]
+	do
+		album="${splitted[i]}"
+		if [[ "$current" == "$album" ]]; then
+			let "i++"
+		else
+			finished=True
+		fi
+	done
+	let "i++"
+	mpc play "$i"
+	j=$i
+	let "j--"
+	if [[ $clear == True ]]; then
+		while [[ $j -gt 0 ]]
+		do
+			mpc del "$j"
+			let "j--"
+		done
+	fi
+}
+
+toggle_clear() {
+	if [[ $clear == True ]]; then
+		clear=False
+	else
+		clear=True
+	fi
+}
+
+help() {
+	echo "You haven't given a valid command. Please read the README"
+}
+
+i=0
+
+for arg do
+	case "$arg" in
+		-c) toggle_clear ;;
+		rand) rand ;;
+		next) next ;;
+		*) help ;;
+	esac
+	let "i++"
+done
+
+if [[ $i -eq 0 ]]; then
+	help
+fi
