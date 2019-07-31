@@ -11,7 +11,7 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
 ## How to use
 
-`rand` - Adds a random album to the queue, `-c` will clear the entire queue before adding.
+`random` - Adds a random album to the queue, `-c` will clear the entire queue before adding.
 
 `next` - Skips forward to the next album in the queue, `-c` will clear all albums before the newly selected one.
 
@@ -27,7 +27,7 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
 `crop` - Remove all albums from the queue except for the current playing one
 
-`play [index]` - Will play the `index`th album in the queue (1-index as `mpc` is). `-c` will remove all albums before this index.
+`play [index]` - Will play the `index`<sup>th</sup> album in the queue (1-index as `mpc` is). `-c` will remove all albums before this index.
 
 Use the `-c` flag to remove albums from the queue. The exact effect depends on the command used, but overall, `-c` will remove all albums up to what has just been added/started.
 
