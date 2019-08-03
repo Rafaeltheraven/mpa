@@ -14,7 +14,11 @@ done
 rand() {
 	# Get a list of all the albums
 	if [[ "$2" = "-t" ]]; then
-		tracks="$(mpc $argarray list title $1)"
+		if [[ "$1" = "" ]]; then
+			track="$(mpc $argarray list title)"
+		else
+			tracks=$(mpc $argarray list title "${1}")
+		fi
 		readarray -t splitted <<<"$tracks"
 		size=${#splitted[@]}
 		index=$(($RANDOM % $size))
@@ -27,7 +31,11 @@ rand() {
 		mpc $argarray add "$file"
 		dump="$(mpc $argarray play)"
 	else
-		albums=$(mpc $argarray list album "${1}")
+		if [[ "$1" = "" ]]; then
+			albums="$(mpc $argarray list album)"
+		else
+			albums=$(mpc $argarray list album "${1}")
+		fi
 		# Split bu newline
 		readarray -t splitted <<<"$albums"
 		# Get the size
