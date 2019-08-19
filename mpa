@@ -1,17 +1,21 @@
-#!/bin/bash 
+#!/bin/bash
 
 clear=False
 
 argarray=()
 
+commarray=()
+
 for arg in "$@"
 do
 	if [[ "$arg" = "--"* ]]; then
 		argarray+=("$arg")
+	else
+		commarray+=("$arg")
 	fi
 done
 
-rand() {
+mpa_rand() {
 	# Get a list of all the albums
 	if [[ "$2" = "-t" ]]; then
 		if [[ "$1" = "" ]]; then
@@ -54,47 +58,85 @@ rand() {
 	fi
 }
 
-radio() {
-	searchArg="$1"
-	if [[ $clear = True ]]; then
-		mpc clear
-		clear=False
-	fi
-	playlist="$(playlist)"
-	readarray -t splitted <<<"$playlist"
-	size=${#splitted[@]}
-	while [[ size -lt 2 ]]
-	do
-		rand "$searchArg" "$2"
-		let "size++"
-	done
+mpa_two() {
 	if [[ "$2" = "-t" ]]; then
-		while [[ "" = "" ]]
+		pos="$(mpc $argarray -f %position% current)"
+		playlist="$(mpc playlist)"
+		readarray -t splitted <<<"$playlist"
+		sizes=${#splitted[@]}
+		if [[ "$pos" = "" ]]; then
+			pos=0
+		fi
+		if [[ "$playlist[@]" = "" ]]; then
+			sizes=0
+		fi
+		diff="$(expr $sizes - $pos)"
+		while [[ $diff -lt 1 || $sizes -lt 2 ]]
 		do
-			dump="$(mpc $argarray current --wait)"
-			rand "$searchArg" "-t"
+			mpa_rand "$1" -t
+			let "sizes++"
+			diff="$(expr $sizes - $pos)"
 		done
 	else
-		while [[ size -lt 2 ]]
+		playlist="$(mpa_playlist)"
+		readarray -t splitted <<<"$playlist"
+		sizes=${#splitted[@]}
+		if [[ "$playlist[@]" = "" ]]; then
+			sizes=0
+		fi
+		while [[ $sizes -lt 2 ]]
 		do
-			rand "$searchArg"
-			let "size++"
+			mpa_rand "$1"
+			let "sizes++"
 		done
-		while [[ "" = "" ]]
+		current="$(mpc $argarray -f '%albumartist% - %album%' current)"
+		i=0
+		playlist="$(mpa_playlist)"
+		readarray -t splitted <<<"$playlist"
+		sizes=${#splitted[@]}
+		while [[ $i -lt $sizes ]]
 		do
-			prev="$(mpc $argarray -f '%albumartist% - %album%' current)"
-			curr=""
-			while [[ "$prev" = "$curr" || "$curr" = "" ]]
-			do
-				curr="$(mpc $argarray -f '%albumartist% - %album%' current --wait)"
-			done
-			rand "$searchArg"
+			found="${splitted[$i]}"
+			if [[ "$found" = "$current" ]]; then
+				let "i++"
+				if [[ $i -ge $sizes ]]; then
+					mpa_rand "$1"
+				fi
+			fi
+			let "i++"
 		done
 	fi
 
 }
 
-next() {
+mpa_radio() {
+	searchArg="$1"
+	if [[ $clear = True ]]; then
+		mpc clear
+		clear=False
+	fi
+	mpa_two "$1" "$2"
+	if [[ "$2" = "-t" ]]; then
+		while [[ "" = "" ]]
+		do
+			dump="$(mpc $argarray current --wait)"
+			mpa_two "$searchArg" -t
+		done
+	else
+		while [[ "" = "" ]]
+		do
+			prev="$(mpc $argarray -f '%albumartist% - %album%' current)"
+			curr="$prev"
+			while [[ "$prev" = "$curr" ]]
+			do
+				curr="$(mpc $argarray -f '%albumartist% - %album%' current --wait)"
+			done
+			mpa_two "$searchArg"
+		done
+	fi
+}
+
+mpa_next() {
 	# Get a list containing the album of each track in the queue. Meaning we have as many entries per album as there are tracks in the queue
 	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
 	# Split by newline
@@ -133,7 +175,7 @@ next() {
 	fi
 }
 
-prev() {
+mpa_prev() {
 	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
 	readarray -t splitted <<<"$playlist"
 	i="$(mpc $argarray -f %position% current)"
@@ -156,16 +198,16 @@ prev() {
 
 }
 
-crop() {
+mpa_crop() {
 	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
 	readarray -t splitted <<<"$playlist"
 	i="$(mpc $argarray -f %position% current)"
+	counter=$i
 	let "i--"
 	curr=${splitted[i]}
 	j=$i
-	counter=$j
 	max=$(( ${#splitted[@]} ))
-	while [[ $j -le $max ]]
+	while [[ $j -lt $max ]]
 	do
 		album="${splitted[$j]}"
 		if [[ "$album" != "$curr" ]]; then
@@ -176,17 +218,20 @@ crop() {
 		let "j++"
 	done
 	j=$i
-	while [[ $j -gt 0 ]]
+	counter="$j"
+	let "counter++"
+	while [[ $j -ge 0 ]]
 	do
 		album="${splitted[$j]}"
 		if [[ "$album" != "$curr" ]]; then
-			mpc $argarray del "$j"
+			mpc $argarray del "$counter"
 		fi
 		let "j--"
+		let "counter--"
 	done
 }
 
-playlist() {
+mpa_playlist() {
 	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
 	if [[ "$playlist" != "" ]]; then
 		readarray -t splitted <<<"$playlist"
@@ -201,11 +246,11 @@ playlist() {
 	fi
 }
 
-current() {
+mpa_current() {
 	echo "$(mpc $argarray -f '%albumartist% - %album%' current)"
 }
 
-play() {
+mpa_play() {
 	index="$1"
 	if [[ $index -lt 1 ]]; then
 		index=1
@@ -235,7 +280,7 @@ play() {
 	fi
 }
 
-queue() {
+mpa_queue() {
 	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
 	readarray -t splitted <<<"$playlist"
 	current="$(mpc $argarray -f '%albumartist% - %album%' current)"
@@ -249,29 +294,31 @@ queue() {
 	echo "$next"
 }
 
-help() {
+mpa_help() {
 	# Should probably write a better help but w/e
 	echo "Usage: mpa <command> [options]"
 	echo "Read the README for more info"
 }
 
-i=0
+mpa_opts() {
+	opt="$1"
 
-opt="$1"
+	if [[ $* = *-c ]]; then
+		clear=True
+	fi
 
-if [[ $* = *-c ]]; then
-	clear=True
-fi
+	case "$opt" in
+		random) mpa_rand "$2" "$3" ;;
+		next) mpa_next ;;
+		playlist) mpa_playlist ;;
+		current) mpa_current ;;
+		queued) mpa_queue ;;
+		play) mpa_play $2 ;;
+		crop) mpa_crop ;;
+		radio) mpa_radio "$2" "$3" ;;
+		-h) mpa_help ;;
+		*) mpc $argarray "$@" ;;
+	esac
+}
 
-case "$opt" in
-	random) rand "$2" "$3" ;;
-	next) next ;;
-	playlist) playlist ;;
-	current) current ;;
-	queued) queue ;;
-	play) play $2 ;;
-	crop) crop ;;
-	radio) radio "$2" "$3" ;;
-	-h) help ;;
-	*) mpc "$@" ;;
-esac
+mpa_opts "${commarray[@]}"
