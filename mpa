@@ -70,12 +70,12 @@ mpa_two() {
 		if [[ "$playlist[@]" = "" ]]; then
 			sizes=0
 		fi
-		diff="$(expr $sizes - $pos)"
+		diff="$((sizes - pos))"
 		while [[ $diff -lt 1 || $sizes -lt 2 ]]
 		do
 			mpa_rand "$1" -t
 			let "sizes++"
-			diff="$(expr $sizes - $pos)"
+			diff="$((sizes - pos))"
 		done
 	else
 		playlist="$(mpa_playlist)"
