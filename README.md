@@ -9,7 +9,11 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 * See playlist as albums instead of tracks
 * Whatever else I can think of that sounds useful
 
-## How to use
+## How to Use
+
+`mpa [command] <flags>`
+
+## Commands
 
 `random [<query> <-t>]` - Adds a random album to the queue. You can pass along a search query to `mpc` using their search syntax. `-t` will add a single track instead of an album.  `-c` will clear the entire queue before adding.
 
@@ -25,7 +29,7 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
 `crop` - Remove all albums from the queue except for the current playing one
 
-`play [index]` - Will play the `index`<sup>th</sup> album in the queue (1-index as `mpc` is). `-c` will remove all albums before this index. If no index is given, just plays index 1
+`play <index>` - Will play the `index`<sup>th</sup> album in the queue (1-index as `mpc` is). `-c` will remove all albums before this index. If no index is given, just plays index 1
 
 `radio [<query> <-t>]` - Will simply run the `random` command consistently. Adding a new album/track when the previous one is finished.
 
