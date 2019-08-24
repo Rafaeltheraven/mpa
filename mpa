@@ -185,15 +185,24 @@ mpa_prev() {
 	while [[ $finished = False ]]
 	do
 		album="${splitted[i]}"
-		if [[ "$prev" = "$album" ]]; then
-			let "i--"
-		else
+		if [[ "$prev" != "$album" ]]; then
 			finished=True
 		fi
+		let "i--"
 	done
-	if [[ $i -lt 1 ]]; then
-		i=1
-	fi
+	prev="$album"
+	finished=False
+	while [[ $finished = False && $i -gt 0 ]]
+	do
+	        album="${splitted[i]}"
+	        if [[ "$prev" != "$album" ]]; then
+	        	finished=True
+	        	let "i++"
+	        else
+	        	let "i--"
+	        fi
+	done
+	let "i++"
 	mpc $argarray play "$i"
 
 }
@@ -310,13 +319,14 @@ mpa_opts() {
 	case "$opt" in
 		random) mpa_rand "$2" "$3" ;;
 		next) mpa_next ;;
+		prev) mpa_prev ;;
 		playlist) mpa_playlist ;;
 		current) mpa_current ;;
 		queued) mpa_queue ;;
 		play) mpa_play $2 ;;
 		crop) mpa_crop ;;
 		radio) mpa_radio "$2" "$3" ;;
-		-h) mpa_help ;;
+		help) mpa_help ;;
 		*) mpc $argarray "$@" ;;
 	esac
 }
