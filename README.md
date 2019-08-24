@@ -44,3 +44,11 @@ Since this is basically just a wrapper around various `mpc` calls. If `mpc` work
 1. `mpd`
 
 2. `mpc`
+
+It should be noted, however, that `random` makes liberal use of the "new" `mcp` search expressions. If you want to make use of `random` and `radio`, you should have the following versions:
+
+1. `mpd >= 0.21`
+
+2. `libmpdclient >= 2.16`
+
+3. `mpc >= 0.31`
