@@ -303,6 +303,34 @@ mpa_queue() {
 	echo "$next"
 }
 
+mpa_del() {
+	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
+	i="$1"
+	readarray -t splitted <<<"$playlist"
+	prev=""
+	counter=0
+	j=0
+	while [[ $counter -lt $i ]]
+	do
+		album="${splitted[$j]}"
+		if [[ "$album" != "$prev" ]]; then
+			let "counter++"
+			prev="$album"
+		else
+			let "j++"
+		fi
+	done
+	hold="$j"
+	let "hold++"
+	album2="${splitted[$j]}"
+	while [[ "$album" = "$album2" ]]
+	do
+		mpc del "$hold"
+		let "j++"
+		album2="${splitted[$j]}"
+	done
+}
+
 mpa_help() {
 	# Should probably write a better help but w/e
 	echo "Usage: mpa <command> [options]"
@@ -327,6 +355,7 @@ mpa_opts() {
 		crop) mpa_crop ;;
 		radio) mpa_radio "$2" "$3" ;;
 		help) mpa_help ;;
+		del) mpa_del "$2" ;;
 		*) mpc $argarray "$@" ;;
 	esac
 }
