@@ -11,7 +11,11 @@ do
 	if [[ "$arg" = "--"* ]]; then
 		argarray+=("$arg")
 	else
-		commarray+=("$arg")
+		if [[ "$arg" = "-c" ]]; then
+			clear=True
+		else
+			commarray+=("$arg")
+		fi
 	fi
 done
 
@@ -271,9 +275,10 @@ mpa_play() {
 	prev=""
 	while [[ $i -lt $index ]]
 	do
-		album="${splitted[i]}"
+		album="${splitted[newIndex]}"
 		if [[ "$album" != "$prev" ]]; then
 			let "i++"
+			prev="$album"
 		fi
 		let "newIndex++"
 	done
@@ -339,10 +344,6 @@ mpa_help() {
 
 mpa_opts() {
 	opt="$1"
-
-	if [[ $* = *-c ]]; then
-		clear=True
-	fi
 
 	case "$opt" in
 		random) mpa_rand "$2" "$3" ;;
