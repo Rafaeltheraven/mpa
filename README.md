@@ -33,7 +33,7 @@ A series of bash scripts wrapped around `mpc` to facilitate listening to albums.
 
 `del <index>` - Will delete the `index`<sup>th</sup> album from the queue.
 
-`radio [<query> <-t>]` - Will simply run the `random` command consistently. Adding a new album/track when the previous one is finished.
+`radio {start|stop|status} [<query> <-t>]` - Will simply run the `random` command consistently. Adding a new album/track when the previous one is finished.
 
 Use the `-c` flag to remove albums from the queue. The exact effect depends on the command used, but overall, `-c` will remove all albums up to what has just been added/started.
 
