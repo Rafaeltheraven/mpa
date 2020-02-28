@@ -291,42 +291,33 @@ mpa_current() {
 
 mpa_play() {
 	index="$1"
-	if [[ $index -lt 1 || "$index" = "" ]]; then
-		mpc play
-	else
-		playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
-		readarray -t splitted <<<"$playlist"
-		local size=${#splitted[@]}
-		i=0
-		newIndex=0
-		prev=""
-		while [[ $i -lt $index && $newIndex -lt $size ]]
-		do
-			album="${splitted[newIndex]}"
-			if [[ "$album" != "$prev" ]]; then
-				let "i++"
-				prev="$album"
-			fi
-			let "newIndex++"
-		done
-		mpc $argarray play "$newIndex"
-		if [[ $cclear = True ]]; then
-			j=$newIndex
-			let "j--"
-			while [[ $j -gt 0 ]]
-			do
-				mpc $argarray del "$j"
-				let "j--"
-			done
-		fi
+	if [[ $index -lt 1 ]]; then
+		index=1
 	fi
-}
-
-mpa_shuffle() {
-	local playlist="$(mpa_playlist)"
+	playlist="$(mpc $argarray -f '%albumartist% - %album%' playlist)"
 	readarray -t splitted <<<"$playlist"
-	shuffled=$(shuf -e "${splitted[@]}")
-	
+	i=0
+	newIndex=0
+	prev=""
+	while [[ $i -lt $index ]]
+	do
+		album="${splitted[newIndex]}"
+		if [[ "$album" != "$prev" ]]; then
+			let "i++"
+			prev="$album"
+		fi
+		let "newIndex++"
+	done
+	mpc $argarray play "$newIndex"
+	if [[ $clear = True ]]; then
+		j=$newIndex
+		let "j--"
+		while [[ $j -gt 0 ]]
+		do
+			mpc $argarray del "$j"
+			let "j--"
+		done
+	fi
 }
 
 mpa_queue() {
@@ -392,7 +383,6 @@ mpa_opts() {
 		radio) (mpa_radio "$2" "$3" "$4" &) &;;
 		help) mpa_help ;;
 		del) mpa_del "$2" ;;
-		shuffle) mpa_shuffle ;;
 		*) mpc $argarray "$@" ;;
 	esac
 }
