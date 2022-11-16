@@ -34,7 +34,7 @@ mpa_rand() {
 		files="$(mpc $argarray find ((title == '$title')))"
 		readarray -t splitted <<<"$files"
 		size=${#splitted[@]}
-		index=$(($RANDOM % $size))
+		index=$(shuf -i 0-$size -n 1)
 		file=${splitted[$index]}
 		mpc $argarray add "$file"
 		dump="$(mpc $argarray play)"
@@ -49,7 +49,7 @@ mpa_rand() {
 		# Get the size
 		size=${#splitted[@]}
 		# Get a random index
-		index=$(($RANDOM % $size))
+		index=$(shuf -i 0-$size -n 1)
 		# Get a random album
 		album=${splitted[$index]}
 		if [[ $clear = True ]]; then
