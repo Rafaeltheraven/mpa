@@ -23,35 +23,19 @@ mpa_rand() {
 	# Get a list of all the albums
 	if [[ "$2" = "-t" ]]; then
 		if [[ "$1" = "" ]]; then
-			track="$(mpc $argarray list title)"
+			title="$(mpc $argarray list title | shuf -n 1)"
 		else
-			tracks=$(mpc $argarray list title "${1}")
+			title=$(mpc $argarray list title "${1}" | shuf -n 1)
 		fi
-		readarray -t splitted <<<"$tracks"
-		size=${#splitted[@]}
-		index=$(($RANDOM % $size))
-		title=${splitted[$index]}
-		files="$(mpc $argarray find ((title == '$title')))"
-		readarray -t splitted <<<"$files"
-		size=${#splitted[@]}
-		index=$(shuf -i 0-$size -n 1)
-		file=${splitted[$index]}
+		file="$(mpc $argarray find ((title == '$title')) | shuf -n 1)"
 		mpc $argarray add "$file"
 		dump="$(mpc $argarray play)"
 	else
 		if [[ "$1" = "" ]]; then
-			albums="$(mpc $argarray list album)"
+			album="$(mpc $argarray list album | shuf -n 1)"
 		else
-			albums=$(mpc $argarray list album "${1}")
+			album=$(mpc $argarray list album "${1}" | shuf -n 1)
 		fi
-		# Split bu newline
-		readarray -t splitted <<<"$albums"
-		# Get the size
-		size=${#splitted[@]}
-		# Get a random index
-		index=$(shuf -i 0-$size -n 1)
-		# Get a random album
-		album=${splitted[$index]}
 		if [[ $clear = True ]]; then
 			mpc $argarray clear
 		fi
