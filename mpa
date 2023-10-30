@@ -27,7 +27,7 @@ mpa_rand() {
 		else
 			title=$(mpc $argarray list title "${1}" | shuf -n 1)
 		fi
-		file="$(mpc $argarray find ((title == '$title')) | shuf -n 1)"
+		file=$(mpc "$argarray" find '((title == "$title"))' | shuf -n 1)
 		mpc $argarray add "$file"
 		dump="$(mpc $argarray play)"
 	else
